@@ -1,5 +1,6 @@
-###code for findinf Double Radio AGN (DRAGNs) from radio catalogue data
+###code for finding Double Radio AGN (DRAGNs) from radio catalogue data
 ###finds pairs of radio components based on flux and size criteria
+###developed by Yjan Gordon (yjan.gordon@umanitba.ca) Jan 2021
 
 import numpy as np, pandas as pd, argparse
 from astropy.table import Table, hstack, vstack, unique
