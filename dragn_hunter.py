@@ -7,10 +7,6 @@ from astropy.coordinates import SkyCoord, match_coordinates_sky
 from astropy import units as u
 
 ##############################################################################
-####parameters
-
-
-##############################################################################
 ###functions
 
 def source_name(ra, dec, aprec=2, dp=5, prefix=''):

@@ -45,7 +45,7 @@ pair_name | identifier for the pair of the format Jhhmmss.ss±ddmmss.s
 
 **Code Dependencies**
 The following python packages are required to run this code (version used in development):
-> numpy (1.17.4)
-> pandas (1.0.3)
-> argparse (1.1)
-> astropy (3.2)
+* numpy (1.17.4)
+* pandas (1.0.3)
+* argparse (1.1)
+* astropy (3.2)
