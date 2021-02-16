@@ -88,7 +88,10 @@ def find_pairs(data, columndict = {'name': 'Component_name', 'ra': 'RA',
     ###calculate position angles
     pa_pair = c1.position_angle(c2).to(u.deg)
     sep_pair = c1.separation(c2)
-    centroid = c1.directional_offset_by(pa_pair, sep_pair/2)
+    centroid = c1.directional_offset_by(pa_pair, sep_pair/2) ###need to add flux weighted
+    flux_weighting = np.array(pairs[stcol+'_1']/(pairs[stcol+'_1'] + pairs[stcol+'_2']))
+    ###use 1-flux weighting to bring FW centroid closer to brightest component
+    fwcentroid = c1.directional_offset_by(pa_pair, sep_pair*(1-flux_weighting))
     
     
     dpa1 = np.array(pairs[pacol+'_1'] - pa_pair)
@@ -111,8 +114,10 @@ def find_pairs(data, columndict = {'name': 'Component_name', 'ra': 'RA',
     pairs['abs_dPA_2'] = adpa[1]*u.deg
     pairs['Tflux_ratio'] = np.array(pairs[stcol+'_1']/pairs[stcol+'_2'])
     pairs['Pflux_ratio'] = np.array(pairs[spcol+'_1']/pairs[spcol+'_2'])
-    pairs['cenRA'] = centroid.ra
-    pairs['cenDEC'] = centroid.dec
+    pairs['medianRA'] = centroid.ra
+    pairs['medianDEC'] = centroid.dec
+    pairs['cenRA'] = fwcentroid.ra
+    pairs['cenDEC'] = fwcentroid.dec
     pairs['d_2NN'] = nn2[1].to(u.arcsec)
     pairs['pair_name'] = source_name(ra=pairs['cenRA'], dec=pairs['cenDEC'])
 

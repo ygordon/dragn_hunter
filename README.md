@@ -37,8 +37,10 @@ dPA_n | difference in position angle of component_n to PA_pair [deg]
 abs_dPA | magnitude of dPA_n
 Tflux_ratio | ratio of total flux of component_1 to component_2
 Pflux_ratio | ratio of peak flux of component_1 to component_2
-cenRA | median (not flux weighted) RA of the pair [deg]
-cenDEC | median (not flux weighted) DEC of the pair [deg]
+medianRA | median (not flux weighted) RA of the pair [deg]
+medianDEC | median (not flux weighted) DEC of the pair [deg]
+cenRA | RA of the pair's flux weighted centroid [deg]
+cenDEC | DEC of the pair's flux weighted centroid [deg]
 d_2NN | distance to the second nearest neighbour of the pair [arcsec]
 pair_name | identifier for the pair of the format Jhhmmss.ss±ddmmss.s
 
