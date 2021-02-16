@@ -144,7 +144,7 @@ def hunt_dragns(catfile, config_file, write_file=True):
     ##load and preprocesses cat data
     catdata = preprocess_cat(catfile=catfile, flux_col=coldict['peak'],
                              flux_min=catparams['flux_min'], size_col=coldict['maj'],
-                             size_min=catparams['size_min'],
+                             size_min=catparams['lobesize_min'],
                              fileformat=catparams['file_format'])
     
     ###find pairs and flag (need to add flagging)
@@ -156,7 +156,7 @@ def hunt_dragns(catfile, config_file, write_file=True):
         splitname = catfile.split('.')
         prename, extension = splitname[0], '.' + splitname[len(splitname)-1]
         newname = (prename + '_flux' + str(int(catparams['flux_min'])) + '_size'
-                   + str(int(catparams['size_min'])) + '_pairs' + extension)
+                   + str(int(catparams['lobesize_min'])) + '_pairs' + extension)
         pairs.write(newname, format=catparams['file_format'])
         return
     else:
@@ -169,10 +169,12 @@ def config_parse(config_file):
     
     ##parameters for catalog preprocessing
     minflux = np.float(cdata['value'][np.where(cdata['parameter']=='min_brightness')[0][0]])
-    minsize = np.float(cdata['value'][np.where(cdata['parameter']=='min_size')[0][0]])
+    minsizelobe = np.float(cdata['value'][np.where(cdata['parameter']=='min_size_lobe')[0][0]])
+    maxsizecore = np.float(cdata['value'][np.where(cdata['parameter']=='max_size_core')[0][0]])
     dformat = cdata['value'][np.where(cdata['parameter']=='data_format')[0][0]]
     
-    catparams = {'flux_min': minflux, 'size_min': minsize, 'file_format':dformat}
+    catparams = {'flux_min': minflux, 'lobesize_min': minsizelobe,
+                 'coresize_max': maxsizecore, 'file_format':dformat}
     
     ##catalogue column names
     namecol = cdata['value'][np.where(cdata['parameter']=='name_col')[0][0]]

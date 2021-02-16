@@ -8,7 +8,8 @@ maj_col		'DC_Maj'
 min_col		'DC_Min'
 pa_col		'DC_PA'
 min_brightness	3
-min_size	5
+min_size_lobe	5
+max_size_core	0.5
 data_format	'fits'
 
 
