@@ -3,12 +3,84 @@
 ###developed by Yjan Gordon (yjan.gordon@umanitba.ca) Jan 2021
 
 import numpy as np, pandas as pd, argparse
-from astropy.table import Table, hstack, vstack, unique
+from astropy.table import Table, hstack, vstack, unique, join, Column
 from astropy.coordinates import SkyCoord, match_coordinates_sky
 from astropy import units as u
+from astroquery.vizier import Vizier
+
+####use astroquery v 0.4.3 (0.4.1 breaks on multi object queries)
+
+########################################
+#time of code check - not important for code to run
+import time
+start_time = time.time()
+########################################
+
+cwise_vz = 'II/365'
+
+###for hosts add nearest match to doubles table (if found, null if not) and out put a table of all hosts
+
+###
 
 ##############################################################################
 ###functions
+
+def find_catwise(data, acol='RA', dcol='DEC',
+                 cwcols=['_q', 'CWISE',
+                         'snrW1pm', 'snrW2pm', 'W1mproPM',
+                         'W2mproPM'],
+                 sepcolname='sep_from_radio_source',
+                 searchrad=10*u.arcsec):
+    'query CatWISE 2020 via VizieR for host candidates using pairs data'
+    
+    ###creat skycoord list
+    poscat = SkyCoord(ra=data[acol], dec=data[dcol])
+    
+    viz = Vizier(catalog='II/365') ##setup vizier query and run
+    cwise = viz.query_region(poscat, radius=searchrad)[0] ##[0] returns astropy table
+    
+    ###rename 'Name' to 'CWISE' to make explicit (last step!)
+    cwise.rename_column(name='Name', new_name='CWISE')
+    
+    
+    ###join with data to create two outputs: all candidates and best match
+    ###1) table of all returned candidates
+    
+    ##add index starting at 1 to data so as to join with _q from query
+    data['_q'] = np.arange(len(data))+1
+    
+    ###create table of hosts
+    hostcands = join(data[['pair_name', acol, dcol, '_q']], cwise,
+                     keys='_q', join_type='right')
+    
+    ###add in separation -- not given by query (sep in vizier table is sep between CWISE and AWISE)
+    ppos = SkyCoord(ra=hostcands[acol], dec=hostcands[dcol])
+    cpos = SkyCoord(ra=hostcands['RA_ICRS'], dec=hostcands['DE_ICRS'])
+    sepcol = Column(ppos.separation(cpos).to('arcsec'), name=sepcolname)
+    
+    hostcands.add_column(sepcol, index=1) ##add as second column after pair name
+    
+    ###2) data with added info about the closest CWISE host candidate
+    ##subset useful columns
+    bestmatch = hostcands[cwcols+[sepcolname]]
+    
+    ##sort by distance
+    bestmatch.sort(keys=sepcolname)
+    
+    ##take only closest
+    bestmatch = unique(bestmatch, keys='_q', keep='first')
+    
+    ###join with data
+    dragns = join(data, bestmatch, keys='_q', join_type='left')
+
+    
+    ###remove superfluous columns from tables -- do this last
+    hostcands.remove_columns(names=[acol, dcol, '_q'])
+    dragns.remove_column(name='_q')
+    data.remove_column(name='_q')
+                      
+    return dragns, hostcands
+
 
 def source_name(ra, dec, aprec=2, dp=5, prefix=''):
     ###create source name to nearest arcsec based on ra/dec
@@ -150,17 +222,22 @@ def hunt_dragns(catfile, config_file, write_file=True):
     ###find pairs and flag (need to add flagging)
     pairs = find_pairs(data=catdata, columndict=coldict)
     
+    ###find host candidates
+    dragns, hosts = find_catwise(data=pairs, acol='cenRA', dcol='cenDEC')
+    
     ###write to file or return data in code
     if write_file==True:
         ##create new file name based on old
-        splitname = catfile.split('.')
-        prename, extension = splitname[0], '.' + splitname[len(splitname)-1]
-        newname = (prename + '_flux' + str(int(catparams['flux_min'])) + '_size'
-                   + str(int(catparams['lobesize_min'])) + '_pairs' + extension)
-        pairs.write(newname, format=catparams['file_format'])
+#        splitname = catfile.rsplit('.', 1)
+#        prename, extension = splitname[0], '.' + splitname[len(splitname)-1]
+#        newname = (prename + '_flux' + str(int(catparams['flux_min'])) + '_size'
+#                   + str(int(catparams['lobesize_min'])) + '_pairs' + extension)
+#        pairs.write(newname, format=catparams['file_format'])
+        dragns.write('DRAGNs.fits', format='fits')
+        hosts.write('host_candidates.fits', format='fits')
         return
     else:
-        return(pairs)
+        return(dragns, hosts)
 
 
 def config_parse(config_file):
@@ -218,4 +295,8 @@ if __name__ == '__main__':
     if args.writepairs==True:
         hunt_dragns(catfile=args.radio_cat, config_file=args.config, write_file=True)
     else:
-        pairs = hunt_dragns(catfile=args.radio_cat, config_file=args.config, write_file=False)
+        dragns, hosts = hunt_dragns(catfile=args.radio_cat, config_file=args.config,
+                                    write_file=False)
+
+    #########################################################################
+    print('END: ', np.round(time.time()-start_time, 2), 's')
