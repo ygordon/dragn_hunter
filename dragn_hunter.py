@@ -16,7 +16,7 @@ import time
 start_time = time.time()
 ########################################
 
-cwise_vz = 'II/365'
+Vizier.ROW_LIMIT = -1
 
 ###for hosts add nearest match to doubles table (if found, null if not) and out put a table of all hosts
 
