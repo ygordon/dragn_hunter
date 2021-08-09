@@ -5,9 +5,11 @@ command line code for searching for pairs of radio components that satisfy speci
 *python3 dragn_hunter.py radio_catalogue*
 
 where *radio_catalogue* is the filename of the radio catalogue data file. By default this code assumes that a config file named *config.txt* exists but a different config file can be called by *--config=filename*.
-The output consists of two files.
+The output consists of two files:
+
 1) DRAGNs.fits is a table of unique radio pairs (candidate DRAGNs) and (if any) the closest CatWISE source to the flux weighted centroid of the pair.
 2) host_candidates.fits is a table of all CatWISE sources within 10 arcsec of the flux weighted centroids of the radio pairs.
+
 These two tables are joinable on the column name 'pair_name', and are detailed below. If importing the functionality from another code or using iPython in the command line, and outputting a file is not desired, then the option *--writepairs='False'* can be used to return an astropy table of the data instead.
 
 
