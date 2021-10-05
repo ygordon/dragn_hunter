@@ -22,6 +22,7 @@ ra_col | name of the RA column in the radio catalogue file (assumed to be in dec
 dec_col | name of the Dec column in the radio catalogue file (assumed to be in decimal degrees)
 Speak_col | name of the peak flux column in the radio catalogue file
 Stot_col | name of the total flux column in the radio catalogue file
+Stot_err_col | name of the total flux uncertainty column in the radio catalogue file
 maj_col | name of the major axis size column in the radio catalogue file
 min_col | name of the minor axis size column in the radio catalogue file
 pa_col | name of the position angle column in the radio catalogue file (assumed to be degrees)
@@ -42,6 +43,8 @@ dPA_n | difference in position angle of component_n to PA_pair [deg]
 abs_dPA | magnitude of dPA_n
 Tflux_ratio | ratio of total flux of component_1 to component_2
 Pflux_ratio | ratio of peak flux of component_1 to component_2
+Total_flux | total flux of the the pair (sum of individual total fluxes)
+E_Total_flux | uncertainty in Total_flux (quadrature sum of individual total flux errors)
 medianRA | median (not flux weighted) RA of the pair [deg]
 medianDEC | median (not flux weighted) DEC of the pair [deg]
 cenRA | RA of the pair's flux weighted centroid [deg]
