@@ -110,7 +110,7 @@ def source_name(ra, dec, aprec=2, dp=5, prefix=''):
 
 def find_pairs(data, columndict = {'name': 'Component_name', 'ra': 'RA',
                'dec': 'DEC', 'peak': 'Peak_flux', 'total': 'Total_flux',
-               'maj': 'DC_Maj', 'min': 'DC_Min', 'pa': 'DC_PA'},
+               'etot': 'E_Total_flux', 'maj': 'DC_Maj', 'min': 'DC_Min', 'pa': 'DC_PA'},
                only_unique_pairs=True):
     'find pair candidates, include basic neighbour info, sepatation, PA, and sep to 3rdNN'
     
@@ -129,6 +129,7 @@ def find_pairs(data, columndict = {'name': 'Component_name', 'ra': 'RA',
     dcol = columndict['dec']
     spcol = columndict['peak']
     stcol = columndict['total']
+    estcol = columndict['etot']
     majcol = columndict['maj']
     mincol = columndict['min']
     pacol = columndict['pa']
@@ -186,6 +187,8 @@ def find_pairs(data, columndict = {'name': 'Component_name', 'ra': 'RA',
     pairs['abs_dPA_2'] = adpa[1]*u.deg
     pairs['Tflux_ratio'] = np.array(pairs[stcol+'_1']/pairs[stcol+'_2'])
     pairs['Pflux_ratio'] = np.array(pairs[spcol+'_1']/pairs[spcol+'_2'])
+    pairs['Total_flux'] = pairs[stcol+'_1'] + pairs[stcol+'_2']
+    pairs['E_Total_flux'] = np.sqrt(pairs[estcol+'_1']**2 + pairs[estcol+'_2']**2)
     pairs['medianRA'] = centroid.ra
     pairs['medianDEC'] = centroid.dec
     pairs['cenRA'] = fwcentroid.ra
