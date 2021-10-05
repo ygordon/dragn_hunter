@@ -230,12 +230,6 @@ def hunt_dragns(catfile, config_file, write_file=True):
     
     ###write to file or return data in code
     if write_file==True:
-        ##create new file name based on old
-#        splitname = catfile.rsplit('.', 1)
-#        prename, extension = splitname[0], '.' + splitname[len(splitname)-1]
-#        newname = (prename + '_flux' + str(int(catparams['flux_min'])) + '_size'
-#                   + str(int(catparams['lobesize_min'])) + '_pairs' + extension)
-#        pairs.write(newname, format=catparams['file_format'])
         dragns.write('DRAGNs.fits', format='fits')
         hosts.write('host_candidates.fits', format='fits')
         return
@@ -262,12 +256,14 @@ def config_parse(config_file):
     deccol = cdata['value'][np.where(cdata['parameter']=='dec_col')[0][0]]
     peakcol = cdata['value'][np.where(cdata['parameter']=='Speak_col')[0][0]]
     totcol = cdata['value'][np.where(cdata['parameter']=='Stot_col')[0][0]]
+    etotcol = cdata['value'][np.where(cdata['parameter']=='Stot_err_col')[0][0]]
     majcol = cdata['value'][np.where(cdata['parameter']=='maj_col')[0][0]]
     mincol = cdata['value'][np.where(cdata['parameter']=='min_col')[0][0]]
     pacol = cdata['value'][np.where(cdata['parameter']=='pa_col')[0][0]]
     
     coldict = {'name': namecol, 'ra': racol, 'dec': deccol, 'peak': peakcol,
-               'total': totcol, 'maj': majcol, 'min': mincol, 'pa': pacol}
+               'total': totcol, 'etot': etotcol,'maj': majcol, 'min': mincol,
+               'pa': pacol}
     
     return(catparams, coldict)
 
