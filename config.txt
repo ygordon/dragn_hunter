@@ -3,6 +3,7 @@ name_col	'Component_name'
 ra_col		'RA'
 dec_col		'DEC'
 Speak_col	'Peak_flux'
+Speak_err_col	'E_Peak_flux'
 Stot_col	'Total_flux'
 Stot_err_col	'E_Total_flux'
 maj_col		'DC_Maj'
@@ -10,7 +11,6 @@ min_col		'DC_Min'
 pa_col		'DC_PA'
 min_brightness	3
 min_size_lobe	3
-max_size_core	0.5
 data_format	'fits'
 
 
