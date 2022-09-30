@@ -15,6 +15,7 @@ Additionally, there are a number of optional commands, these are [default values
 
 The output of the code consists of a primary table (_dragns.fits_) and a number of suplementary tables described below. Note, the tables _sources.fits_ and _host_candidates.fits_ will only be produced if _--find_hosts_==True.
 
+<br/>
 
 **dragns.fits**
 This is a list of DRAGNs selected from the parent sample of pairs of candidate lobes in _pairs.fits_. This is the primary output of _dragnhunter.py_.
@@ -46,6 +47,7 @@ DEC_median | Median Decl. of two lobes [deg]
 RA_fw | Flux weighted central R.A. of two lobes [deg]
 DEC_fw | Flux weighted central Decl. of two lobes [deg]
 
+<br/>
 
 **pairs.fits**
 This table describes the parent sample of 'pairs of candidate lobes' from which _dragns.fits_ is drawn. The table contains many of the columns from the input radio component catalog for each component identified as a canidate lobe or core (colname_1, colname_2, colname_c respectively). Additionaly some derived properties of the pairs are output with these column definitions below (some overlap with _dragns.fits_). These may be useful for refining _dragn_hunter.py_ for use on different data sets.
@@ -100,10 +102,12 @@ RA | R.A. of the source [deg]
 sep_core_pmed | Angular separation between the candidate core and the median position of the pair [arcsec]
 sep_core_pcen | Angular separation between the candidate core and the flux-weighted central position of the pair [arcsec]
 
+<br/>
 
 **single_comps.fits**
 This is a table of all components (above the minimum flux limit set in the config file) not included as part of a DRAGN (lobe or core) in _dragns.fits_. These are treates as potential single-component sources for host finding purposes. Column names are the same as in the input radio component catalog file.
 
+<br/>
 
 **sources.fits**
 A table of **all** sources (DRAGNs and single-component) for which host-finding is done. ONLY PRODUCED WHEN HOST_FINDING == True.
@@ -129,6 +133,7 @@ W4_mag | Vega magnitude of closest AllWISE source in the W4 band [mag]
 e_W4_mag | Uncertainty in _W4_mag_ [mag]
 Sep_AllWISE | Angular separation between radio source and closest AllWISE source [arcsec]
 
+<br/>
 
 **host_candidates.fits**
 A table of all AllWISE host candidates within the defined _search_radius_ of the radio source. ONLY PRODUCED WHEN HOST_FINDING == True. Columns are provided by the CDS VizieR version of the AllWISE catalog (https://cdsarc.cds.unistra.fr/viz-bin/cat/II/328) with the addition of:
@@ -138,7 +143,7 @@ parameter | description [units]
 Name | Julian name of the radio source.
 Sep_AllWISE | Angular separation between radio source and named AllWISE source [arcsec]
 
-
+<br/>
 
 **Config File Description**
 The configuration should be a text file with two tab separated columns of data (an example, _config.txt_ is provided). The left-hand columns define the input data structure as listed below:
@@ -164,7 +169,7 @@ min_brightness | minimum peak flux of radio sources to use in pair finding (in s
 min_size_lobe | minimum size of radio sources to use as candidate lobes in pair finding (in same units as *maj_col*)
 data_format | format of radio catalogue file
 
-
+<br/>
 
 **Code Dependencies**
 The following python packages are required to run this code (version used in development):
