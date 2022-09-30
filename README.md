@@ -17,7 +17,7 @@ The output of the code consists of a primary table (_dragns.fits_) and a number 
 
 <br/>
 
-## Table of DRAGNs (dragns.fits)
+### Table of DRAGNs (dragns.fits)
 This is a list of DRAGNs selected from the parent sample of pairs of candidate lobes in _pairs.fits_. This is the primary output of _dragnhunter.py_.
 
 parameter | description [units]
