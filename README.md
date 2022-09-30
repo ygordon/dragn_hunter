@@ -13,6 +13,8 @@ Additionally, there are a number of optional commands, these are [default values
 *--outdir* [output_files], directory in which to dump output files (will make directory if doesn't already exist).
 
 
+##Output Data
+
 The output of the code consists of a primary table (_dragns.fits_) and a number of suplementary tables described below. Note, the tables _sources.fits_ and _host_candidates.fits_ will only be produced if _--find_hosts_==True.
 
 <br/>
@@ -49,7 +51,7 @@ DEC_fw | Flux weighted central Decl. of two lobes [deg]
 
 <br/>
 
-**pairs.fits**
+### Table of all identified pairs (pairs.fits)
 This table describes the parent sample of 'pairs of candidate lobes' from which _dragns.fits_ is drawn. The table contains many of the columns from the input radio component catalog for each component identified as a canidate lobe or core (colname_1, colname_2, colname_c respectively). Additionaly some derived properties of the pairs are output with these column definitions below (some overlap with _dragns.fits_). These may be useful for refining _dragn_hunter.py_ for use on different data sets.
 
 parameter | description [units]
@@ -90,9 +92,8 @@ DE_best | 'Best' Decl. of pair. If a core is found this is the core Decl., other
 
 <br/>
 
-**candidate_cores.fits**
+###Core candidates (candidate_cores.fits)
 A Table of all components identified as candidate core for the pairs listed in _pairs.fits_.
-
 
 parameter | description [units]
 ----------|------------
@@ -104,12 +105,12 @@ sep_core_pcen | Angular separation between the candidate core and the flux-weigh
 
 <br/>
 
-**single_comps.fits**
+### Single component sources (single_comps.fits)
 This is a table of all components (above the minimum flux limit set in the config file) not included as part of a DRAGN (lobe or core) in _dragns.fits_. These are treates as potential single-component sources for host finding purposes. Column names are the same as in the input radio component catalog file.
 
 <br/>
 
-**sources.fits**
+###Source table (sources.fits)
 A table of **all** sources (DRAGNs and single-component) for which host-finding is done. ONLY PRODUCED WHEN HOST_FINDING == True.
 
 parameter | description [units]
@@ -135,7 +136,7 @@ Sep_AllWISE | Angular separation between radio source and closest AllWISE source
 
 <br/>
 
-**host_candidates.fits**
+### All host candidates (host_candidates.fits)
 A table of all AllWISE host candidates within the defined _search_radius_ of the radio source. ONLY PRODUCED WHEN HOST_FINDING == True. Columns are provided by the CDS VizieR version of the AllWISE catalog (https://cdsarc.cds.unistra.fr/viz-bin/cat/II/328) with the addition of:
 
 parameter | description [units]
@@ -145,8 +146,8 @@ Sep_AllWISE | Angular separation between radio source and named AllWISE source [
 
 <br/>
 
-**Config File Description**
-The configuration should be a text file with two tab separated columns of data (an example, _config.txt_ is provided). The left-hand columns define the input data structure as listed below:
+##Configuration File
+The config file should be a text file with two tab separated columns of data (an example, _config.txt_ is provided). The left-hand columns define the input data structure as listed below:
 
 parameter | description
 ----------|------------
@@ -171,7 +172,8 @@ data_format | format of radio catalogue file
 
 <br/>
 
-**Code Dependencies**
+##Code Dependencies
+
 The following python packages are required to run this code (version used in development):
 * numpy (1.22.3)
 * distutils (3.10.0)
