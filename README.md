@@ -13,7 +13,7 @@ Additionally, there are a number of optional commands, these are [default values
 *--outdir* [output_files], directory in which to dump output files (will make directory if doesn't already exist).
 
 
-##Output Data
+## Output Data
 
 The output of the code consists of a primary table (_dragns.fits_) and a number of suplementary tables described below. Note, the tables _sources.fits_ and _host_candidates.fits_ will only be produced if _--find_hosts_==True.
 
@@ -92,7 +92,7 @@ DE_best | 'Best' Decl. of pair. If a core is found this is the core Decl., other
 
 <br/>
 
-###Core candidates (candidate_cores.fits)
+### Core candidates (candidate_cores.fits)
 A Table of all components identified as candidate core for the pairs listed in _pairs.fits_.
 
 parameter | description [units]
@@ -110,7 +110,7 @@ This is a table of all components (above the minimum flux limit set in the confi
 
 <br/>
 
-###Source table (sources.fits)
+### Source table (sources.fits)
 A table of **all** sources (DRAGNs and single-component) for which host-finding is done. ONLY PRODUCED WHEN HOST_FINDING == True.
 
 parameter | description [units]
@@ -146,7 +146,7 @@ Sep_AllWISE | Angular separation between radio source and named AllWISE source [
 
 <br/>
 
-##Configuration File
+## Configuration File
 The config file should be a text file with two tab separated columns of data (an example, _config.txt_ is provided). The left-hand columns define the input data structure as listed below:
 
 parameter | description
@@ -172,7 +172,7 @@ data_format | format of radio catalogue file
 
 <br/>
 
-##Code Dependencies
+## Code Dependencies
 
 The following python packages are required to run this code (version used in development):
 * numpy (1.22.3)
