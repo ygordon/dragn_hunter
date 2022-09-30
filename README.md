@@ -86,11 +86,11 @@ E_CoreProm | Uncertainty in Core_prom
 RA_best | 'Best' R.A. of pair. If a core is found this is the core RA, otherwise this is _cenRA_ [deg]
 DE_best | 'Best' Decl. of pair. If a core is found this is the core Decl., otherwise this is _cenDEC_ [deg]
 
+<br/>
 
 **candidate_cores.fits**
 A Table of all components identified as candidate core for the pairs listed in _pairs.fits_.
 
-_
 
 parameter | description [units]
 ----------|------------
