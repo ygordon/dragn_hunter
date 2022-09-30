@@ -89,6 +89,9 @@ DE_best | 'Best' Decl. of pair. If a core is found this is the core Decl., other
 
 **candidate_cores.fits**
 A Table of all components identified as candidate core for the pairs listed in _pairs.fits_.
+
+_
+
 parameter | description [units]
 ----------|------------
 pair_name | Name of the radio pair
