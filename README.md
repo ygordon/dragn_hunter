@@ -12,12 +12,14 @@ Additionally, there are a number of optional commands, these are [default values
 *--search_radius* [30arcsec], maximum radius to use when searching for radio cores (and AllWISE sources if *--find_hosts=True*);\
 *--outdir* [output_files], directory in which to dump output files (will make directory if doesn't already exist).
 
+A test input catalog has been provided in the directory _test_data_. This radio component data is a subset of the VLASS component catalog (https://ui.adsabs.harvard.edu/abs/2021ApJS..255...30G/abstract) covering the region $100^{\circ} < \alpha < 200^{\circ}$ and $-5^{\circ} < \delta +5^{\circ}$.
+
+
 
 ## Output Data
 
 The output of the code consists of a primary table (_dragns.fits_) and a number of suplementary tables described below. Note, the tables _sources.fits_ and _host_candidates.fits_ will only be produced if _--find_hosts_==True.
 
-<br/>
 
 ### Table of DRAGNs (dragns.fits)
 This is a list of DRAGNs selected from the parent sample of pairs of candidate lobes in _pairs.fits_. This is the primary output of _dragnhunter.py_.
