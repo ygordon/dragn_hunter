@@ -7,9 +7,9 @@ command line code for searching for pairs of radio components that satisfy speci
 where *radio_catalogue* is the filename of the radio catalogue data file. 
 
 Additionally, there are a number of optional commands, these are [default values in square brackets]:\
-*--config* [config.txt], config file describing the input component table (see below);
-*--find_hosts* [True], tell the code whether to query the AllWISE source catalog for potential host candidates;
-*--search_radius* [30arcsec], maximum radius to use when searching for radio cores (and AllWISE sources if *--find_hosts=True*);
+*--config* [config.txt], config file describing the input component table (see below);\
+*--find_hosts* [True], tell the code whether to query the AllWISE source catalog for potential host candidates;\
+*--search_radius* [30arcsec], maximum radius to use when searching for radio cores (and AllWISE sources if *--find_hosts=True*);\
 *--outdir* [output_files], directory in which to dump output files (will make directory if doesn't already exist).
 
 
