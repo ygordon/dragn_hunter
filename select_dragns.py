@@ -94,7 +94,7 @@ def select_dragns(data,
     dragns = data[data[prefpaircol]==1]
     
     ##subset minumum size
-    dragns = data[data[sepcol]>minsep]
+    dragns = dragns[dragns[sepcol]>minsep]
     
     ##subset on sep v misalign -- v1 coefficients are input, but later versions may upgrade to determine this automatically
     dragns = dragns[(dragns[misacol]<(sepmis_a*np.log10(dragns[sepcol])+sepmis_b))]
