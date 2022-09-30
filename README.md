@@ -1,4 +1,4 @@
-#dragn_hunter.py readme
+# dragn_hunter.py readme
 
 command line code for searching for pairs of radio components that satisfy specified criteria, and flagging likely Double Radio sources associated with Active Galactic Nuclei (DRAGNs). Additionally candidate hosts are identified by querying the CatWISE2020 catalog using the flux weighted centroid of the double as the reference position. Run as:
 
