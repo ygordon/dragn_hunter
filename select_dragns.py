@@ -7,10 +7,9 @@ import numpy as np, os, argparse
 from astropy.table import Table, join, unique, vstack
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from astroquery.vizier import Vizier
-from astropy.io.votable import parse
-from io import BytesIO
+from astroquery.utils.tap.core import TapPlus
 from distutils.util import strtobool
+import time
 
 #plt.interactive(True)
 
@@ -227,82 +226,136 @@ def make_source_list(dragns, single_comps,
     return sources
 
 
-def vobytes_to_table(data):
-    'reads in votable in bytes (i.e. direct from query not xml file) and outputs astropy table'
-    bytes = BytesIO(data) ##make a BytesIO object of the data (input as bytes)
-    parsed_bytes = parse(bytes) ##parse into astropy VOTableFile object
-    outdata = parsed_bytes.get_first_table().to_table() ##returns first table in VOTableFile; wont work for multiple
+def write_query(table_to_query='II/328/allwise',
+                search_rad=30*u.arcsec, searchprec=0,
+                upload_name='uploaded_data',
+                upra='RA', updec='DEC',
+                qra='RAJ2000', qdec='DEJ2000'):
+    'construct SQL query string from input parameters'
+    
+    srad = str(np.round(search_rad.to('arcsec').value, searchprec))
+    
+    qstring = f"SELECT * \n FROM tap_upload.{upload_name} AS tup \n JOIN \"{table_to_query}\" AS db \n ON 1=CONTAINS(POINT('ICRS', tup.{upra}, tup.{updec}), CIRCLE('ICRS', db.{qra}, db.{qdec}, {srad}/3600.))"
+    
+    return qstring
+
+
+def objectcols_to_str(data):
+    'convert dtype==object cols to str to allow saving as fits files'
+    ##alternative is to save as votable
+    cols = data.colnames
+    for col in cols:
+        if data[col].dtype == object:
+            data[col] = np.array(data[col]).astype(str)
+    
+    return
+ 
+ 
+def tapq_vizier(data, acol='RA', dcol='DEC',
+                viztable='II/328/allwise',
+                search_radius=30*u.arcsec,
+                vizra='RAJ2000', vizdec='DEJ2000',
+                upload_name='uploaded_data',
+                sep_col='ang_sep', verbose=True):
+    'function to upload a table and perform positional cross match against a Vizier table'
+    ##defaults to allwise if no vizier table input'
+    
+    ###mark time for testing
+    t0 = time.time()
+    
+    ##construct query
+    query = write_query(table_to_query=viztable,
+                        search_rad=search_radius,
+                        upload_name=upload_name,
+                        upra=acol, updec=dcol,
+                        qra=vizra, qdec=vizdec)
+    
+    ##setup tap and launch job
+    tap = TapPlus(url='http://tapvizier.u-strasbg.fr/TAPVizieR/tap')
+    job = tap.launch_job_async(query=query, upload_resource=data,
+                               upload_table_name=upload_name,
+                               verbose=verbose)
+    
+    ###get results
+    outdata = job.get_data()
+    
+    ###calculate angular separation
+    posin = SkyCoord(ra=outdata[acol], dec=outdata[dcol])
+    posviz = SkyCoord(ra=outdata[vizra], dec=outdata[vizdec])
+    angsep = posin.separation(posviz).to(search_radius.unit)
+    
+    ###round to appropriate number of sig figs
+    sf_dict = {u.arcsec: 2, u.arcmin: 6, u.deg:9}
+    angsep = np.round(angsep, sf_dict[search_radius.unit])
+    
+    ##add to outdata
+    outdata[sep_col] = angsep
+    outdata[sep_col].unit = search_radius.unit
+    
+    ###mark time for testing
+    if verbose==True:
+        dt = time.time()-t0
+        print('')
+        print('time for host finding (N='+str(len(data))+') = ' + str(np.round(dt, 2)) +'s')
+        print('')
     
     return outdata
 
 
-def find_allwise(data, acol='RA', dcol='DEC', namecol='Name',
-                 cwcols=['_q', 'AllWISE',
-                         'W1mag', 'e_W1mag', 'W2mag', 'e_W2mag',
-                         'W3mag', 'e_W3mag', 'W4mag', 'e_W4mag'],
+def find_allwise(data, namecol='Name', acol='RA', dcol='DEC',
+                 vizra='RAJ2000', vizdec='DEJ2000',
+                 awcols=['AllWISE', 'W1mag', 'e_W1mag', 'W2mag',
+                         'e_W2mag', 'W3mag', 'e_W3mag', 'W4mag',
+                         'e_W4mag'],
                  sepcolname='Sep_AllWISE',
                  searchrad=30*u.arcsec,
-                 q_async=True,
-                 maxtimeout=600):
-    'query AllWISE via VizieR for host candidates using pairs data'
-    ###async query waits for job to finish before sending response, no benefit here -- maybe better with SQL query to IRSA?
-    ###creat skycoord list
-    poscat = SkyCoord(ra=data[acol], dec=data[dcol])
-
-    viz = Vizier(catalog='II/328', columns=['_q', '_r', '*']) ##setup vizier query and run
-    viz.ROW_LIMIT = -1
-    viz.TIMEOUT = maxtimeout
-    
-    if q_async==True:
-        qres = viz.query_region_async(poscat, radius=searchrad)
-        awise = vobytes_to_table(qres.content)
+                 chunk_size=50000):
+    'query AllWISE using tap-vizier'
+    ###query VizieR
+    ###split into chunks if large input
+    dlen = len(data)
+    indata = data[[namecol, acol, dcol]]
+    if dlen > chunk_size:
+        job_results = []
+        n_chunks = int(np.ceil(dlen/chunk_size))
+        for i in range(n_chunks+1):
+            print('')
+            print('AWISE query chunk '+str(i+1)+'/'+str(n_chunks))
+            print('')
+            dchunk = indata[i*chunk_size: (i+1)*chunk_size]
+            job = tapq_vizier(data=dchunk, acol=acol, dcol=dcol,
+                              viztable='II/328/allwise',
+                              search_radius=searchrad,
+                              sep_col=sepcolname, verbose=True)
+            job_results.append(job)
+        tap_results = vstack(job_results)
     else:
-        qres = viz.query_region(poscat, radius=searchrad) ##returns table list
-        awise = qres[0] ##returns astropy table
+        tap_results = tapq_vizier(data=indata, acol=acol, dcol=dcol,
+                                  viztable='II/328/allwise',
+                                  search_radius=searchrad,
+                                  sep_col=sepcolname, verbose=True)
+    
+    ###split into two tables (all host candidates, and source table with closest)
+    ##remove acol, dcol from tap_results to prevent duplication
+    tap_results.meta = {} ###removes meta for clean joins
+    objectcols_to_str(data=tap_results) ###convert object cols to string for saving as fits
+    tap_results.remove_columns(names=[acol, dcol])
+    tap_results.sort(sepcolname)
+    
+    bestmatch = unique(tap_results, namecol)
+    
+    ###convert bestmatch namecol dtype
+    bestmatch[namecol] = np.array(bestmatch[namecol]).astype(str)
+    ###join with data to create source table of best matches
+    bestmatch = join(data, bestmatch[awcols+[namecol, sepcolname]],
+                     keys=namecol, join_type='left')
+    bestmatch.sort(acol)
+    
+    tap_results.sort(vizra)
+    
+    ###create dict
 
-    ###join with data to create two outputs: all candidates and best match
-    ###1) table of all returned candidates
-
-    ##add index starting at 1 to data so as to join with _q from query
-    data['_q'] = np.arange(len(data))+1
-
-    ###create table of hosts
-    hostcands = join(data[[namecol, acol, dcol, '_q']], awise,
-                     keys='_q', join_type='right')
-
-    ###rename '_r' to sepcolname
-    hostcands.rename_column(name='_r', new_name=sepcolname)
-
-    ###2) data with added info about the closest CWISE host candidate
-    ##subset useful columns
-    bestmatch = hostcands[cwcols+[sepcolname]]
-
-    ##sort by distance
-    bestmatch.sort(keys=sepcolname)
-
-    ##take only closest
-    bestmatch = unique(bestmatch, keys='_q', keep='first')
-
-    ###join with data
-    dragns = join(data, bestmatch, keys='_q', join_type='left')
-
-
-    ###remove superfluous columns from tables -- do this last
-    hostcands.remove_columns(names=[acol, dcol, '_q'])
-    dragns.remove_column(name='_q')
-    data.remove_column(name='_q')
-
-    ###clean metadata
-    hostcands.meta = {}
-    dragns.meta = {}
-    ###alter description of sepcol
-    hostcands[sepcolname].description = 'angular offset between radio and AllWISE positions'
-    dragns[sepcolname].description = 'angular offset between radio and AllWISE positions'
-
-    ###sort hosts by name and sep
-    hostcands.sort([namecol, sepcolname])
-
-    return dragns, hostcands
+    return bestmatch, tap_results
 
 
 def select_sources_and_find_hosts(pairs, components,
