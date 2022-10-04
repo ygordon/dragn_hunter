@@ -318,7 +318,7 @@ def find_allwise(data, namecol='Name', acol='RA', dcol='DEC',
     if dlen > chunk_size:
         job_results = []
         n_chunks = int(np.ceil(dlen/chunk_size))
-        for i in range(n_chunks+1):
+        for i in range(n_chunks):
             print('')
             print('AWISE query chunk '+str(i+1)+'/'+str(n_chunks))
             print('')
