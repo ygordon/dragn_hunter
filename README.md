@@ -1,12 +1,9 @@
-# Code to find double sources in VLASS
+# DRAGNhunter: Code to find double sources in VLASS
 
-This readme gives a brief, high level, overview of the CIRADA code to used to find DRAGNs and single-component radio sources in VLASS plus their AllWISE host IDs. If you find the code or its resultant data products helpful in your research we request that you cite the article _"A Quick Look at the 3GHz Radio Sky. II. Hunting for DRAGNs in the VLA Sky Survey"_ (Y. A. Gordon et al., 2023, submitted to ApJS, https://arxiv.org/abs/2303.12830), which describes the method and output data in detail. The code acts as a wrapper for two main algorithms:
-
-1. Yjan Gordon's DRAGNhunter (https://github.com/ygordon/dragn_hunter), a code for finding likely double sources in component catalog data. This algorithm was designed using VLASS data and is also set up to find potential host candidates from AllWISE.
-2. Leah Morabito's likelihood ratio host-identification code (https://github.com/lmorabit/likelihood_ratio).
+This readme gives a brief, high level, overview of the CIRADA code to used to find DRAGNs and single-component radio sources in VLASS plus their AllWISE host IDs. If you find the code or its resultant data products helpful in your research we request that you cite the article _"A Quick Look at the 3GHz Radio Sky. II. Hunting for DRAGNs in the VLA Sky Survey"_ (Y. A. Gordon et al., 2023, ApJS 267, 37 https://ui.adsabs.harvard.edu/abs/2023ApJS..267...37G/abstract), which describes the method and output data in detail.
 
 
-In short this wrapper runs DRAGNhunter to identify likely doubles in VLASS and potential host candidates from AllWISE. The likelihood ratio code is then used to identify the most likely correct host for these doubles, as well as hosts for single-component sources. Where a double source has a radio core identified, in a few percent of cases the core and host identifications disagree. In such cases the core position is used to select the host over the lieklihood ratio identification. Run as 
+In short this code identifies likely doubles in VLASS and potential host candidates from AllWISE. The likelihood ratio method is then used to identify the most likely correct host for these doubles, as well as hosts for single-component sources. Where a double source has a radio core identified, in a few percent of cases the core and host identifications disagree. In such cases the core position is used to select the host over the lieklihood ratio identification. Run as 
 
     >python hunt_dragns_and_find_hosts.py radio_catalogue
 
